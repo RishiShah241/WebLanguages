@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        color:white;
+        background:black;
+    }
+    .box{
+        margin: auto;
+        margin-top: 6rem;
+        width:auto;
+        width: max-content;
+    }
+    .center{
+        border-right: 1px solid #fff;
+        border-left: 1px solid #fff;
+    }
+    .center_hor{
+        border-top: 1px solid #fff;
+        border-bottom: 1px solid #fff;
+    }
+    .row{
+        width: max-content;
+        display: flex;
+    }
+    button{
+        width: 150px;
+        height:150px;
+        border:none;
+        color: white;
+        display: inline;
+        font-size:  90px;
+        cursor: pointer;
+        background-color: #fff0;
+    }
+    .buttons{
+        width: 80px;
+        height: 31px;
+        border: none;
+        margin: 20%;
+        color: white;
+        font-size: large;
+        border-radius: 5px;
+        background-color: #333;
+    }
+    .col{
+        width: 150px;
+        height: max-content;
+    }
+</style>
+<script>
+    let win = " "
+    let list = [ [1,'one'],
+                [2,'two'],
+                [3,'three'],
+
+                [4,'four'],
+                [5,'five'],
+                [6,'six'],
+
+                [7,'seven'],
+                [8,'eight'],
+                [9,'nine']
+            ]
+    let history = ''
+    let Next = ''
+    let c = changes = 0
+    function checkif(values,a,b,c){
+        if(values[a]==values[b] && values[b]==values[c] && values[a]!=' '){
+            win = values[a]
+            return true
+        }
+        else
+            return false
+    }
+    function check(values){
+        return ( checkif(values,0,1,2) || checkif(values,3,4,5) || checkif(values,6,7,8) || checkif(values,0,4,8) || checkif(values,2,4,6) || checkif(values,0,3,6) || checkif(values,1,4,7) || checkif(values,2,5,8) )
+    }
+    function iswin(){
+        let local = [ 
+                        '', '', '',
+                        '', '', '',
+                        '', '', '' 
+                    ]
+        for(let i = 0 ; i<9 ; i++){
+            let tmp = document.getElementById(list[i][1])
+            let s = String(tmp.textContent)
+            if(s=="" || s==undefined)
+                local[i]=" "
+            else
+                local[i]=s
+        }
+        if(check(local))
+            alert("Vicroty : "+win+" is Won")
+        else
+            if(c==9){
+                win = "Draw"
+                alert("Draw : No One Win")
+            }
+        }
+    function next(){
+        let tmp = String(Next).split(' ')
+        if(changes>0){
+            // assignning Data to add X or O on page
+            let x = document.getElementById(tmp[0])
+            if(c%2==0)
+                x.textContent = "X"
+            else
+                x.textContent = "O"
+            c++
+            // again add value in history cause we also do back again and again
+            if(c==0)
+                history = tmp[0] + history
+            else
+                history = tmp[0] + ' ' + history
+            delete tmp[0]
+            let y = ""
+            tmp.forEach(i => {
+                if(i!=undefined){
+                    y = y + String(i) + " "
+                }
+            });
+            Next = y
+            changes--
+            if(c>=5)
+                iswin()
+        }
+        else{
+            alert("No Changes are Posible")
+        }
+    }
+    function back(){
+        let tmp = String(history).split(' ')
+        win = " "
+        if(c>0){
+            let x = document.getElementById(tmp[0])
+            // assignning Data to delete X or O on page
+            x.textContent = ""
+            // saving another history for the next button
+            if(c==0)
+                Next = tmp[0] + Next
+            else
+                Next = tmp[0] + ' ' + Next
+            changes++
+            delete tmp[0]
+            let y = ""
+            tmp.forEach(i => {
+                if(i!=undefined){
+                    y = y + String(i) + " "
+                }
+            });
+            history = y
+            c--
+        }
+        else{
+            alert("Game is not started yet")
+        }
+    }
+    function update(id){
+        for(let i=0;i<9;i++){
+            if(id === list[i][0]){
+                let cur = document.getElementById(list[i][1])
+                if(cur.textContent=="" && win==' '){
+                    if(c%2==0)
+                        cur.textContent = "X"
+                    else
+                        cur.textContent = "O"
+                    c++
+                    // saving another history for the back button
+                    if(c==0)
+                        history = list[i][1] + history
+                    else
+                        history = list[i][1] + ' ' + history
+                    if(c>=5)
+                        iswin()
+                }
+            }
+        }
+    }
+    function restart(){
+        for(let i=0;i<9;i++){
+            let x = document.getElementById(list[i][1])
+            x.textContent = ""
+        }
+        win = ' '
+        history = ''
+        Next = ''
+        c = 0
+        changes = 0
+    }
+    document.addEventListener('keydown', function(event) {
+        if(event.ctrlKey && event.key === 'z'){
+            back()
+        }
+        else if(event.ctrlKey && event.key === 'Z'){
+            next()
+        }
+    });
+    input.addEventListener('keydown', function(event) {
+        var e = new Event('keydown');
+        e.keyCode = 20;
+        document.dispatchEvent(e);
+    });
+    offCapsLock()
+
+</script>
+<body>
+    <div class="box">
+        <div class="row">
+            <button id="one"  onclick="update(1)"></button> 
+            <button id="two" class="center" onclick="update(2)"></button>
+            <button id="three"  onclick="update(3)"></button>
+        </div>
+        <div class="row center_hor">
+            <button id="four" onclick="update(4)"></button> 
+            <button id="five" class="center" onclick="update(5)"></button>
+            <button id="six" onclick="update(6)"></button>
+        </div>
+        <div class="row">
+            <button id="seven"  onclick="update(7)"></button>
+            <button id="eight" class="center" onclick="update(8)"></button>
+            <button id="nine"  onclick="update(9)"></button>
+        </div>
+        <div class="row">
+            <div class="col"> <button class="buttons" onclick="back()">Back</button> </div>
+            <div class="col"> <button class="buttons" onclick="restart()">Restart</button> </div>
+            <div class="col"> <button class="buttons" onclick="next()">Next</button> </div>
+        </div>
+    </div>
+</body>
+</html>
